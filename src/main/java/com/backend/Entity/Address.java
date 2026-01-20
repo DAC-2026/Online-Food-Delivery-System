@@ -1,0 +1,36 @@
+package com.backend.Entity;
+
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+@Entity 
+@Table(name = "address")
+public class Address {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "address_id")
+	private Long addressId;
+	private String label;
+	@Column(name = "address_line")
+	private String addressLine;
+	private String city;
+	private String pincode;
+	@Column(precision = 9, scale = 6)
+	private Double latitude;
+	@Column(precision = 9, scale = 6)
+	private Double longitude;
+	
+	@ManyToOne()
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
+//		user_id
+
+	
+}
