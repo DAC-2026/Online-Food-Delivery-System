@@ -1,36 +1,46 @@
 package com.backend.Entity;
 
+import java.math.BigDecimal;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-@Entity 
+@Entity
 @Table(name = "address")
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString(exclude = "user")
 public class Address {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "address_id")
-	private Long addressId;
-	private String label;
-	@Column(name = "address_line")
-	private String addressLine;
-	private String city;
-	private String pincode;
-	@Column(precision = 9, scale = 6)
-	private Double latitude;
-	@Column(precision = 9, scale = 6)
-	private Double longitude;
-	
-	@ManyToOne()
-	@JoinColumn(name = "user_id", nullable = false)
-	private User user;
-//		user_id
 
-	
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "address_id")
+    private Long addressId;
+
+    @Column(nullable = false, length = 50)
+    private String label;
+
+    @Column(name = "address_line", nullable = false, length = 255)
+    private String addressLine;
+
+    @Column(nullable = false, length = 50)
+    private String city;
+
+    @Column(nullable = false, length = 10)
+    private String pincode;
+
+    @Column(precision = 9, scale = 6)
+    private BigDecimal latitude;
+
+    @Column(precision = 9, scale = 6)
+    private BigDecimal longitude;
+    
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

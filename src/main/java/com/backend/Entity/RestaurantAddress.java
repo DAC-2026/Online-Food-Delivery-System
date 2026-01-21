@@ -1,35 +1,40 @@
 package com.backend.Entity;
-
+import java.math.BigDecimal;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
-@Entity 
+@Entity
 @Table(name = "restaurant_address")
-public class RestaurantAddress {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "address_id")
-	private Long addressId;
-	@Column(name = "address_line")
-	private String addressLine;
-	private String city;
-	private String pincode;
-	@Column(precision = 9, scale = 6)
-	private Double latitude;
-	@Column(precision = 9, scale = 6)
-	private Double longitude;
-	
-	@ManyToOne()
-	@JoinColumn(name = "restaurant_id", nullable = false)
-	private Restaurant restaurant;
-//		user_id
+public class RestaurantAddress{
+//	@Id
+//	@Column(name = "restaurant_id")
+//	private Long restaurantId;
+    @Column(name = "address_line", nullable = false)
+    private String addressLine;
 
-	
+    @Column(nullable = false)
+    private String city;
+
+    @Column(nullable = false)
+    private String pincode;
+
+    @Column(precision = 9, scale = 6, nullable = false)
+    private BigDecimal latitude;
+
+    @Column(precision = 9, scale = 6, nullable = false)
+    private BigDecimal longitude;
+
+    @Id
+    @OneToOne
+    @JoinColumn(
+        name = "restaurant_id",
+        nullable = false,
+        unique = true
+    )
+    private Restaurant restaurant;
 }
