@@ -1,4 +1,4 @@
-package com.backend.controller;
+package com.backend.controller.user;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,12 +41,7 @@ public class RestaurantController {
 	@GetMapping("/{restaurantId}")
 	@Operation(description =  "Get Restaurant By Id")
 	public ResponseEntity<?> getRestaurantDetails(@PathVariable("restaurantId") @Min(1) Long id){
-		try {
 		return ResponseEntity.ok(restaurantService.getRestaurantById(id));
-		}
-		catch(ResourceNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(), "Failed"));
-		}
 	}
 
 	

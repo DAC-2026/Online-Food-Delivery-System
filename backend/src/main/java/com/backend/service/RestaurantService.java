@@ -8,5 +8,11 @@ import com.backend.dto.RestaurantDto;
 public interface RestaurantService {
 	List<RestaurantDto> getAllRestaurants();
 
-	Restaurant getRestaurantById(Long id);
+	RestaurantDto getRestaurantById(Long id);
+	
+	RestaurantDto createRestaurant(com.backend.dto.CreateRestaurantRequest request);
+	
+	RestaurantDto updateRestaurant(Long id, com.backend.dto.CreateRestaurantRequest request);
+	
+	void deleteRestaurant(Long id);
 }

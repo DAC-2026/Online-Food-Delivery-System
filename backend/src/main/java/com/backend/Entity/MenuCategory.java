@@ -19,7 +19,7 @@ import lombok.ToString;
 @Table(name = "menu_category")
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"restaurant", "items"})
 public class MenuCategory {
 	
 	@Id

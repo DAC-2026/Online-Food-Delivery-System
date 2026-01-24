@@ -1,4 +1,4 @@
-package com.backend.controller;
+package com.backend.controller.user;
 
 import static com.backend.utils.ApiPath.V1;
 
@@ -29,27 +29,13 @@ public class MenuController {
 	@GetMapping("/restaurants/{restaurantId}/categories")
 	@Operation(description = "Get menu Categories By Restaurant Id")
 	public ResponseEntity<?> getAllCategories(@PathVariable("restaurantId") @Min(1) Long id){
-		try {
-			
 			return ResponseEntity.ok(menuService.getAllCategories(id));
-		}
-		catch(ResourceNotFoundException e) {
-			
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(), "Failed"));
-		}
 	}
 	
 	@GetMapping("/categories/{categoryId}/items")
 	@Operation(description = "Get menu items By Category Id")
-	public ResponseEntity<?>  getMenu(@PathVariable("restaurantId") @Min(1) Long id){
-		try {
-			
+	public ResponseEntity<?>  getMenuItems(@PathVariable("categoryId") @Min(1) Long id){
 			return ResponseEntity.ok(menuService.getMenuItems(id));
-		}
-		catch(ResourceNotFoundException e) {
-			
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(), "Failed"));
-		}
 	}
 	
 	

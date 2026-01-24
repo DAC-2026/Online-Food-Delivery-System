@@ -22,7 +22,7 @@ import lombok.ToString;
 @AttributeOverride(name = "id", column = @Column(name = "item_id"))
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "category")
 public class MenuItem extends BaseEntity {
 
     @Column(nullable = false)
