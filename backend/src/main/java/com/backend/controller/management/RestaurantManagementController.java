@@ -37,14 +37,7 @@ public class RestaurantManagementController {
 	@PutMapping("/{id}")
 	@Operation(description = "Update an existing Restaurant")
 	public ResponseEntity<RestaurantDto> updateRestaurant(@PathVariable Long id,
-			@Valid @RequestBody CreateRestaurantRequest request) {
+			@RequestBody CreateRestaurantRequest request) {
 		return ResponseEntity.ok(restaurantService.updateRestaurant(id, request));
-	}
-
-	@DeleteMapping("/{id}")
-	@Operation(description = "Delete a Restaurant")
-	public ResponseEntity<Void> deleteRestaurant(@PathVariable Long id) {
-		restaurantService.deleteRestaurant(id);
-		return ResponseEntity.noContent().build();
 	}
 }

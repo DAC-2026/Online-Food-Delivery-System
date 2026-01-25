@@ -68,7 +68,7 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(
                         LocalDateTime.now(),
                         500,
-                        "An unexpected error occurred: " + ex.getMessage()
+                        "An unexpected error occurred: " + ex
                 ));
     }
 }

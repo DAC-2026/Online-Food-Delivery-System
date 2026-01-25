@@ -1,4 +1,5 @@
 package com.backend.service.impl;
+import com.backend.dto.CreateRestaurantRequest;
 
 import java.util.List;
 import org.modelmapper.ModelMapper;
@@ -32,14 +33,14 @@ public class RestaurantServiceImpl implements RestaurantService {
 	}
 
 	@Override
-	public RestaurantDto createRestaurant(com.backend.dto.CreateRestaurantRequest request) {
+	public RestaurantDto createRestaurant(CreateRestaurantRequest request) {
 		Restaurant restaurant = modelMapper.map(request, Restaurant.class);
 		Restaurant savedRestaurant = restaurantRepository.save(restaurant);
 		return modelMapper.map(savedRestaurant, RestaurantDto.class);
 	}
 
 	@Override
-	public RestaurantDto updateRestaurant(Long id, com.backend.dto.CreateRestaurantRequest request) {
+	public RestaurantDto updateRestaurant(Long id, CreateRestaurantRequest request) {
 		Restaurant restaurant = restaurantRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + id));
 
@@ -48,11 +49,5 @@ public class RestaurantServiceImpl implements RestaurantService {
 		return modelMapper.map(updatedRestaurant, RestaurantDto.class);
 	}
 
-	@Override
-	public void deleteRestaurant(Long id) {
-		Restaurant restaurant = restaurantRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + id));
-		restaurantRepository.delete(restaurant);
-	}
 
 }

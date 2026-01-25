@@ -2,6 +2,7 @@ package com.backend.Entity;
 import java.math.BigDecimal;
 
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
 
 //import com.backend.constants.AvailabilityStatus;
 
@@ -12,7 +13,7 @@ import jakarta.persistence.FetchType;
 //import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-//import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +23,7 @@ import lombok.ToString;
 @AttributeOverride(name = "id", column = @Column(name = "item_id"))
 @Getter
 @Setter
-@ToString(exclude = "category")
+@ToString(exclude = {"category", "ratings"})
 public class MenuItem extends BaseEntity {
 
     @Column(nullable = false)
@@ -49,4 +50,7 @@ public class MenuItem extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private MenuCategory category;
+
+    @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<MenuItemRating> ratings;
 }
