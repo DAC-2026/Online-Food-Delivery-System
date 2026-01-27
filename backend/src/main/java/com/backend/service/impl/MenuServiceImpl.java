@@ -6,6 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.backend.Entity.MenuCategory;
+import com.backend.Entity.MenuItem;
 import com.backend.Entity.Restaurant;
 import com.backend.Repository.MenuCategoryRepository;
 import com.backend.Repository.MenuItemRepository;
@@ -37,7 +38,14 @@ public class MenuServiceImpl implements MenuService {
 				.toList();
 	}
 	@Override
-	public List<MenuItemDto> getMenuItems(Long id) {
+	public List<MenuItemDto> getMenuItemsByRestaurantId(Long id) {
+		return menuItemRepository.findMenuItemsByRestaurantId(id)
+				.stream()
+				.map(menuItem -> modelMapper.map(menuItem, MenuItemDto.class))
+				.toList();
+	}
+	@Override
+	public List<MenuItemDto> getMenuItemsByCategory(Long id) {
 		MenuCategory category = menuCategoryRepository.findById(id)
 				.orElseThrow(()->new ResourceNotFoundException("Category Not found"));
 		return menuItemRepository.findByCategory(category)
@@ -91,6 +99,7 @@ public class MenuServiceImpl implements MenuService {
 		com.backend.Entity.MenuItem updatedMenuItem = menuItemRepository.save(menuItem);
 		return modelMapper.map(updatedMenuItem, MenuItemDto.class);
 	}
+	
 
 
 }

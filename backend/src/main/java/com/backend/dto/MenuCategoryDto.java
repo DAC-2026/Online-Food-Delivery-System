@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class MenuCategoryDto {
+	private Long categoryId;
 	@NotNull(message = "name must not be null")
     private String name;
 	@NotNull(message = "description must not be null")

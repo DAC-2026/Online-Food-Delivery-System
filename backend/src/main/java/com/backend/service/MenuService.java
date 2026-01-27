@@ -9,7 +9,8 @@ public interface MenuService {
 
 	List<MenuCategoryDto> getAllCategories(Long id);
 
-	List<MenuItemDto> getMenuItems(Long id);
+	List<MenuItemDto> getMenuItemsByCategory(Long id);
+	List<MenuItemDto> getMenuItemsByRestaurantId(Long id);
 	
 	MenuCategoryDto createCategory(Long restaurantId, MenuCategoryDto categoryDto);
 	

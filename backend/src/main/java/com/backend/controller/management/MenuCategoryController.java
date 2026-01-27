@@ -3,6 +3,7 @@ package com.backend.controller.management;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,11 +24,12 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping(ApiPath.V1 + "/management")
 @RequiredArgsConstructor
 @Validated
+@CrossOrigin("http://localhost:5173/") 
 public class MenuCategoryController {
 
 	private final MenuService menuService;
 
-	@PostMapping("/restaurants/{restaurantId}/categories")
+	@PostMapping("/{restaurantId}/categories")
 	@Operation(description = "Create a new Menu Category")
 	public ResponseEntity<MenuCategoryDto> createCategory(@PathVariable Long restaurantId,
 			@RequestBody @Valid MenuCategoryDto categoryDto) {

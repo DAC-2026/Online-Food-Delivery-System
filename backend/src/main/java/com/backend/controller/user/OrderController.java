@@ -3,6 +3,7 @@ package com.backend.controller.user;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping(ApiPath.V1)
 @RequiredArgsConstructor
 @Validated
+@CrossOrigin("http://localhost:5173/")
 public class OrderController {
 
     private final OrderService orderService;
