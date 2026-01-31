@@ -1,15 +1,13 @@
 export const buildOrderPayload = ({
-    cartItems,
-    restaurantId,
-    paymentMode,
+    userId, // temporary, will come from auth later
     deliveryAddressId,
-    userId = 1, // temporary, will come from auth later
+    paymentMode,
+    cartItems,
 })=>{
     return {
         userId,
-        restaurantId,
-        paymentMode,
         deliveryAddressId,
+        paymentMode,
         items : Object.values(cartItems).map(item=>({
             menuItemId : item.id,
             quantity : item.quantity,

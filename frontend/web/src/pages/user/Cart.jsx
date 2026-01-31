@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
+import {Link} from 'react-router-dom'
 import {
   addItem,
   removeItem,
@@ -109,9 +110,7 @@ function Cart() {
             Clear Cart
           </button>
 
-          <button className="btn btn-success">
-            Place Order
-          </button>
+          <Link to = "/checkout" className="btn btn-outline-success">Checkout</Link>
         </div>
       </div>
     </div>

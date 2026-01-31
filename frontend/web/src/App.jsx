@@ -9,6 +9,7 @@ import MenuItems from './components/MenuItemCard'
 import {Provider} from 'react-redux'
 import {store} from './store/store'
 import Cart from './pages/user/Cart'
+import Checkout from './components/checkout/Checkout'
 function App() {
   
   return (
@@ -23,6 +24,7 @@ function App() {
               <Route path = "/restaurants/:restaurantId" element =  {<RestaurantDetails/>}/>
               <Route path="/menuItem/:categoryId" element={<MenuItems />} />
               <Route path = "/cart" element = {<Cart/>}/>
+              <Route path = "/checkout" element = {<Checkout/>}/>
             </Routes>
         </Provider>
       </BrowserRouter>
