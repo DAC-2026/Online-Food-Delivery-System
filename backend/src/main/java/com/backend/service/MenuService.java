@@ -2,22 +2,25 @@ package com.backend.service;
 
 import java.util.List;
 
-import com.backend.dto.MenuCategoryDto;
-import com.backend.dto.MenuItemDto;
+import com.backend.dto.MenuCategoryRequest;
+import com.backend.dto.MenuCategoryResponse;
+import com.backend.dto.MenuItemRequest;
+import com.backend.dto.MenuItemResponse;
 
 public interface MenuService {
 
-	List<MenuCategoryDto> getAllCategories(Long id);
+	List<MenuCategoryResponse> getAllCategories(Long id);
 
-	List<MenuItemDto> getMenuItemsByCategory(Long id);
-	List<MenuItemDto> getMenuItemsByRestaurantId(Long id);
+	List<MenuItemResponse> getMenuItemsByCategory(Long id);
+	List<MenuItemResponse> getMenuItemsByRestaurantId(Long id);
+	List<MenuItemResponse> getAllMenuItems();
 	
-	MenuCategoryDto createCategory(Long restaurantId, MenuCategoryDto categoryDto);
+	MenuCategoryResponse createCategory(Long restaurantId, MenuCategoryRequest categoryDto);
 	
-	MenuCategoryDto updateCategory(Long categoryId, MenuCategoryDto categoryDto);
+	MenuCategoryResponse updateCategory(Long categoryId, MenuCategoryRequest categoryDto);
 	
 	
-	MenuItemDto createMenuItem(Long categoryId, MenuItemDto menuItemDto);
+	MenuItemResponse createMenuItem(Long categoryId, MenuItemRequest menuItemDto);
 	
-	MenuItemDto updateMenuItem(Long itemId, MenuItemDto menuItemDto);
+	MenuItemResponse updateMenuItem(Long itemId, MenuItemRequest menuItemDto);
 }

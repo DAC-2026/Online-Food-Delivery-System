@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MenuItemDto {
+public class MenuItemRequest {
     private String name;
     private String description;
     private BigDecimal price;

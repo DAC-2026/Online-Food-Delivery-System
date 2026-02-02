@@ -11,8 +11,10 @@ import com.backend.Entity.Restaurant;
 import com.backend.Repository.MenuCategoryRepository;
 import com.backend.Repository.MenuItemRepository;
 import com.backend.Repository.RestaurantRepository;
-import com.backend.dto.MenuCategoryDto;
-import com.backend.dto.MenuItemDto;
+import com.backend.dto.MenuCategoryRequest;
+import com.backend.dto.MenuCategoryResponse;
+import com.backend.dto.MenuItemRequest;
+import com.backend.dto.MenuItemResponse;
 import com.backend.dto.RestaurantDto;
 import com.backend.exception.ResourceNotFoundException;
 import com.backend.service.MenuService;
@@ -29,33 +31,40 @@ public class MenuServiceImpl implements MenuService {
 	private final MenuItemRepository menuItemRepository;
 	private final ModelMapper modelMapper;
 	@Override
-	public List<MenuCategoryDto> getAllCategories(Long id) {
+	public List<MenuCategoryResponse> getAllCategories(Long id) {
 		Restaurant restaurant = restaurantRepository.findById(id)
 				.orElseThrow(()->new ResourceNotFoundException("Restaurant Not found"));
 		return menuCategoryRepository.findCategoriesByRestaurant(restaurant)
 				.stream()
-				.map(menuCategory ->modelMapper.map(menuCategory, MenuCategoryDto.class))
+				.map(menuCategory ->modelMapper.map(menuCategory, MenuCategoryResponse.class))
 				.toList();
 	}
 	@Override
-	public List<MenuItemDto> getMenuItemsByRestaurantId(Long id) {
+	public List<MenuItemResponse> getMenuItemsByRestaurantId(Long id) {
 		return menuItemRepository.findMenuItemsByRestaurantId(id)
 				.stream()
-				.map(menuItem -> modelMapper.map(menuItem, MenuItemDto.class))
+				.map(menuItem -> modelMapper.map(menuItem, MenuItemResponse.class))
 				.toList();
 	}
 	@Override
-	public List<MenuItemDto> getMenuItemsByCategory(Long id) {
+	public List<MenuItemResponse> getAllMenuItems() {
+		return menuItemRepository.findAll()
+				.stream()
+				.map(menuItem -> modelMapper.map(menuItem, MenuItemResponse.class))
+				.toList();
+	}
+	@Override
+	public List<MenuItemResponse> getMenuItemsByCategory(Long id) {
 		MenuCategory category = menuCategoryRepository.findById(id)
 				.orElseThrow(()->new ResourceNotFoundException("Category Not found"));
 		return menuItemRepository.findByCategory(category)
 				.stream()
-				.map(menuItem ->modelMapper.map(menuItem, MenuItemDto.class))
+				.map(menuItem ->modelMapper.map(menuItem, MenuItemResponse.class))
 				.toList();
 	}
 
 	@Override
-	public MenuCategoryDto createCategory(Long restaurantId, MenuCategoryDto categoryDto) {
+	public MenuCategoryResponse createCategory(Long restaurantId, MenuCategoryRequest categoryDto) {
 		Restaurant restaurant = restaurantRepository.findById(restaurantId)
 				.orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
 		
@@ -63,11 +72,11 @@ public class MenuServiceImpl implements MenuService {
 		category.setRestaurant(restaurant);
 		
 		MenuCategory savedCategory = menuCategoryRepository.save(category);
-		return modelMapper.map(savedCategory, MenuCategoryDto.class);
+		return modelMapper.map(savedCategory, MenuCategoryResponse.class);
 	}
 
 	@Override
-	public MenuCategoryDto updateCategory(Long categoryId, MenuCategoryDto categoryDto) {
+	public MenuCategoryResponse updateCategory(Long categoryId, MenuCategoryRequest categoryDto) {
 		MenuCategory category = menuCategoryRepository.findById(categoryId)
 				.orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + categoryId));
 //		modelMapper.map(categoryDto, MenuCategory.class);
@@ -75,11 +84,11 @@ public class MenuServiceImpl implements MenuService {
 		category.setDescription(categoryDto.getDescription()!=null?categoryDto.getDescription():category.getDescription());
 		category.setImageUrl(categoryDto.getImageUrl()!=null ? categoryDto.getImageUrl():category.getImageUrl());
 		MenuCategory updatedCategory = menuCategoryRepository.save(category);
-		return modelMapper.map(updatedCategory, MenuCategoryDto.class);
+		return modelMapper.map(updatedCategory, MenuCategoryResponse.class);
 	}
 
 	@Override
-	public MenuItemDto createMenuItem(Long categoryId, MenuItemDto menuItemDto) {
+	public MenuItemResponse createMenuItem(Long categoryId, MenuItemRequest menuItemDto) {
 		MenuCategory category = menuCategoryRepository.findById(categoryId)
 				.orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + categoryId));
 		
@@ -87,17 +96,17 @@ public class MenuServiceImpl implements MenuService {
 		menuItem.setCategory(category);
 		
 		com.backend.Entity.MenuItem savedMenuItem = menuItemRepository.save(menuItem);
-		return modelMapper.map(savedMenuItem, MenuItemDto.class);
+		return modelMapper.map(savedMenuItem, MenuItemResponse.class);
 	}
 
 	@Override
-	public MenuItemDto updateMenuItem(Long itemId, MenuItemDto menuItemDto) {
+	public MenuItemResponse updateMenuItem(Long itemId, MenuItemRequest menuItemDto) {
 		com.backend.Entity.MenuItem menuItem = menuItemRepository.findById(itemId)
 				.orElseThrow(() -> new ResourceNotFoundException("Menu Item not found with id: " + itemId));
 		
 		modelMapper.map(menuItemDto, menuItem);
 		com.backend.Entity.MenuItem updatedMenuItem = menuItemRepository.save(menuItem);
-		return modelMapper.map(updatedMenuItem, MenuItemDto.class);
+		return modelMapper.map(updatedMenuItem, MenuItemResponse.class);
 	}
 	
 

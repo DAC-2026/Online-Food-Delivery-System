@@ -21,14 +21,17 @@ import com.backend.Repository.UserRepository;
 import com.backend.constants.OrderStatus;
 import com.backend.constants.PaymentMode;
 import com.backend.constants.PaymentStatus;
+import com.backend.dto.MenuItemDto;
 import com.backend.dto.OrderDetailsResponse;
+import com.backend.dto.OrderItemRequestDto;
 import com.backend.dto.OrderItemResponse;
 import com.backend.dto.OrderResponse;
 import com.backend.dto.PlaceOrderRequestDto;
 import com.backend.exception.ResourceNotFoundException;
 import com.backend.service.OrderService;
+import com.backend.service.PaymentService;
 
-import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional; 
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -43,63 +46,104 @@ public class OrderServiceImpl implements OrderService {
     private final RestaurantRepository restaurantRepository;
     private final AddressRepository addressRepository;
     private final MenuItemRepository menuItemRepository;
+    private final PaymentService paymentService;
 
 
     @Override
     public OrderResponse placeOrder(PlaceOrderRequestDto request) {
         
-        // 1. Validate Entities
+        // 1. Calculate and Validate Amount
+        BigDecimal totalAmount = calculateTotalOrderAmount(request);
+        
+        // 2. Validate Minimum Amount
+        if (totalAmount.compareTo(BigDecimal.ONE) < 0) {
+             throw new RuntimeException("Order total amount " + totalAmount + " is less than minimum allowed (1 INR).");
+        }
+        
+        // 3. Verify Payment if Online (Anything other than COD)
+        if (request.getPaymentMode() != PaymentMode.COD) {
+            String rnpOrderId = request.getRazorpayOrderId();
+            String rnpPaymentId = request.getRazorpayPaymentId();
+            String rnpSignature = request.getRazorpaySignature();
+            
+            if (rnpOrderId == null || rnpPaymentId == null || rnpSignature == null) {
+                throw new RuntimeException("Missing payment details for Online order.");
+            }
+            
+            boolean isSignatureValid = paymentService.verifyPaymentSignature(rnpOrderId, rnpPaymentId, rnpSignature);
+            
+            if (!isSignatureValid) {
+                 throw new RuntimeException("Payment verification failed. invalid signature.");
+            }
+        }
+
+        // 4. Validate Entities (User, Address)
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
-        Restaurant restaurant = restaurantRepository.findById(request.getRestaurantId())
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found"));
 
         Address deliveryAddress = addressRepository.findById(request.getDeliveryAddressId())
                 .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
 
-        // 2. Create Order
+        // 5. Create Order
         CustomerOrder order = new CustomerOrder();
         order.setUser(user);
-        order.setRestaurant(restaurant);
         order.setDeliveryAddress(deliveryAddress);
         order.setOrderStatus(OrderStatus.CONFIRMED);
-        order.setPaymentStatus(PaymentStatus.PENDING);
-        order.setPaymentMode(PaymentMode.valueOf(request.getPaymentMode()));
+        
+        if (request.getPaymentMode() != PaymentMode.COD) {
+             order.setPaymentStatus(PaymentStatus.COMPLETED);
+             order.setRazorpayOrderId(request.getRazorpayOrderId());
+        } else {
+             order.setPaymentStatus(PaymentStatus.PENDING);
+        }
+        
+        order.setPaymentMode(request.getPaymentMode());
 
         List<OrderItem> orderItems = new ArrayList<>();
-        BigDecimal totalAmount = BigDecimal.ZERO;
+        // Re-calculating items for saving (could optimize to reuse from step 1 but keeping separate for now to match flow)
+        BigDecimal finalTotal = BigDecimal.ZERO; 
 
-        // 3. Process Items
         for (var itemRequest : request.getItems()) {
             MenuItem menuItem = menuItemRepository.findById(itemRequest.getMenuItemId())
                     .orElseThrow(() -> new ResourceNotFoundException("Menu Item not found"));
             
-            // Check availability if needed
-             if (!menuItem.getIsAvailable()) {
+            if (!menuItem.getIsAvailable()) {
                  throw new RuntimeException("Item " + menuItem.getName() + " is not available");
-             }
+            }
 
             OrderItem orderItem = new OrderItem();
             orderItem.setMenuItem(menuItem);
             orderItem.setOrder(order);
             orderItem.setQuantity(itemRequest.getQuantity());
-            orderItem.setPrice(menuItem.getPrice()); // Locking price at order time
+            orderItem.setPrice(menuItem.getPrice()); 
 
             orderItems.add(orderItem);
             
             BigDecimal itemTotal = menuItem.getPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity()));
-            totalAmount = totalAmount.add(itemTotal);
+            finalTotal = finalTotal.add(itemTotal);
         }
 
         order.setOrderItems(orderItems);
-        order.setTotalAmount(totalAmount);
+        order.setTotalAmount(finalTotal);
 
-        // 4. Save Order
+        // 6. Save Order
         CustomerOrder savedOrder = orderRepository.save(order);
 
-        // 5. Map to Response
+        // 7. Map to Response
         return mapToOrderResponse(savedOrder);
+    }
+    
+    @Override
+    public BigDecimal calculateTotalOrderAmount(PlaceOrderRequestDto request) {
+        BigDecimal total = BigDecimal.ZERO;
+        for (OrderItemRequestDto itemRequest : request.getItems()) {
+             MenuItem menuItem = menuItemRepository.findById(itemRequest.getMenuItemId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Menu Item not found"));
+             
+             BigDecimal itemTotal = menuItem.getPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity()));
+             total = total.add(itemTotal);
+        }
+        return total;
     }
 
     @Override
@@ -126,11 +170,11 @@ public class OrderServiceImpl implements OrderService {
     private OrderResponse mapToOrderResponse(CustomerOrder order) {
         OrderResponse response = new OrderResponse();
         response.setOrderId(order.getId());
-        response.setOrderStatus(order.getOrderStatus().name());
-        response.setPaymentStatus(order.getPaymentStatus().name());
+        response.setOrderStatus(order.getOrderStatus());
+        response.setPaymentStatus(order.getPaymentStatus());
         response.setTotalAmount(order.getTotalAmount());
-        response.setPaymentMode(order.getPaymentMode().name());
-        response.setMessage("Order placed successfully. Proceed to payment.");
+        response.setPaymentMode(order.getPaymentMode());
+        response.setMessage("Order placed successfully.");
 
         List<OrderItemResponse> itemResponses = order.getOrderItems().stream().map(item -> {
             OrderItemResponse itemResponse = new OrderItemResponse();
@@ -149,10 +193,10 @@ public class OrderServiceImpl implements OrderService {
         // Copy properties from regular response mapping or duplicate logic
         // Since OrderDetailsResponse extends OrderResponse, we can populate it similarly
         response.setOrderId(order.getId());
-        response.setOrderStatus(order.getOrderStatus().name());
-        response.setPaymentStatus(order.getPaymentStatus().name());
+        response.setOrderStatus(order.getOrderStatus());
+        response.setPaymentStatus(order.getPaymentStatus());
         response.setTotalAmount(order.getTotalAmount());
-        response.setPaymentMode(order.getPaymentMode().name());
+        response.setPaymentMode(order.getPaymentMode());
         response.setMessage("Order details fetched successfully."); // Custom message
 
         List<OrderItemResponse> itemResponses = order.getOrderItems().stream().map(item -> {

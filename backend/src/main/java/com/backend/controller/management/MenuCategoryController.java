@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backend.dto.MenuCategoryDto;
+import com.backend.dto.MenuCategoryRequest;
+import com.backend.dto.MenuCategoryResponse;
 import com.backend.service.MenuService;
 import com.backend.utils.ApiPath;
 
@@ -31,15 +32,15 @@ public class MenuCategoryController {
 
 	@PostMapping("/{restaurantId}/categories")
 	@Operation(description = "Create a new Menu Category")
-	public ResponseEntity<MenuCategoryDto> createCategory(@PathVariable Long restaurantId,
-			@RequestBody @Valid MenuCategoryDto categoryDto) {
+	public ResponseEntity<MenuCategoryResponse> createCategory(@PathVariable Long restaurantId,
+			@RequestBody @Valid MenuCategoryRequest categoryDto) {
 		return new ResponseEntity<>(menuService.createCategory(restaurantId, categoryDto), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/categories/{categoryId}")
 	@Operation(description = "Update an existing Menu Category")
-	public ResponseEntity<MenuCategoryDto> updateCategory(@PathVariable Long categoryId,
-			@RequestBody MenuCategoryDto categoryDto) {
+	public ResponseEntity<MenuCategoryResponse> updateCategory(@PathVariable Long categoryId,
+			@RequestBody MenuCategoryRequest categoryDto) {
 		return ResponseEntity.ok(menuService.updateCategory(categoryId, categoryDto));
 	}
 }

@@ -45,6 +45,12 @@ public class MenuController {
 			return ResponseEntity.ok(menuService.getMenuItemsByRestaurantId(id));
 	}
 	
+	@GetMapping("/items")
+	@Operation(description = "Get all menu items")
+	public ResponseEntity<?> getAllMenuItems() {
+		return ResponseEntity.ok(menuService.getAllMenuItems());
+	}
+	
 	
 	
 }
