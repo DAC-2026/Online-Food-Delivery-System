@@ -5,14 +5,16 @@ import RestaurantCard from '../../components/RestaurantCard'
 function Restaurant() {
   const [restaurants, setRestaurants] = useState([]);
   useEffect(()=>{
-    getAllRestaurant()
-    .then(response=>{
+    const fetchRestaurant = async ()=>{
+      try{
+      const response = await getAllRestaurant()
       setRestaurants(response.data)
-      console.log(response.data)
-    })
-    .catch((error)=>{
-      console.error("Error while fetching", error)
-    });
+    }
+    catch(error){
+      console.error("Error while fetching ", error)
+    }
+    }
+    fetchRestaurant();
   },[])
   return (
     <div className='container mt-4'>

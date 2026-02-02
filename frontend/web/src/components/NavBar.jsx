@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 // import {CartContext} from '../context/CartContext'
 import { selectCartCount } from "../store/cartSlice";
-import {useSelector} from 'react-redux'
+import { useSelector } from 'react-redux'
 // import {useContext} from 'react'
 
 
@@ -39,16 +39,21 @@ function NavBar() {
               </Link>
             </li>
             <li>
-                <Link to="/cart" className="nav-link">
-             Cart: {cartCount}
-          </Link>
+              <Link to="/cart" className="nav-link">
+                Cart: {cartCount}
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/admin">
+                Admin
+              </Link>
             </li>
           </ul>
 
           <form className="d-flex" role="search">
-                <input className ="form-control me-2" type="search" placeholder="" aria-label="Search"/>
-                <button className="btn btn-outline" type="submit" style={{border:" 1px solid black"}}>Search</button>
-            </form>
+            <input className="form-control me-2" type="search" placeholder="" aria-label="Search" />
+            <button className="btn btn-outline" type="submit" style={{ border: " 1px solid black" }}>Search</button>
+          </form>
         </div>
       </div>
     </nav>
