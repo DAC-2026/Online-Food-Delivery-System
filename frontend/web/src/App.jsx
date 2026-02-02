@@ -26,6 +26,7 @@ function App() {
             <Route path="/menuItem/:categoryId" element={<MenuItems />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
         </Provider>
       </BrowserRouter>

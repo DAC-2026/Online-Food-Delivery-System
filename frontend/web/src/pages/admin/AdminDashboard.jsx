@@ -290,7 +290,7 @@ export default function AdminDashboard() {
                             <label className="form-label">Select Category</label>
                             <select className="form-select" name="categoryId" value={menuItemForm.categoryId} onChange={(e) => handleChange(e, setMenuItemForm)} required disabled={!menuItemForm.restaurantId}>
                                 <option value="">-- Select Category --</option>
-                                {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                {categories.map(c => <option key={c.categoryId} value={c.categoryId}>{c.name}</option>)}
                             </select>
                         </div>
                         <div className="mb-3">
